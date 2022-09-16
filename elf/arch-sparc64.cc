@@ -93,79 +93,151 @@ void InputSection<E>::apply_reloc_alloc(Context<E> &ctx, u8 *base) {
 #define GOT ctx.got->shdr.sh_addr
 
     switch (rel.r_type) {
+    case R_SPARC_5:
+      *(ub32 *)loc |= bits(S + A, 4, 0);
+      break;
+    case R_SPARC_6:
+      *(ub32 *)loc |= bits(S + A, 5, 0);
+      break;
+    case R_SPARC_7:
+      *(ub32 *)loc |= bits(S + A, 6, 0);
+      break;
+    case R_SPARC_8:
+      *(u8 *)loc = S + A;
+      break;
+    case R_SPARC_10:
+      *(ub32 *)loc = S + A;
+      break;
+    case R_SPARC_11:
+      *(ub32 *)loc = S + A;
+      break;
+    case R_SPARC_13:
+      *(ub32 *)loc |= bits(S + A, 12, 0);
+      break;
+    case R_SPARC_22:
+      *(ub32 *)loc |= bits(S + A, 21, 0);
+      break;
+    case R_SPARC_16:
+    case R_SPARC_UA16:
+      *(ub16 *)loc = S + A;
+      break;
+    case R_SPARC_32:
+    case R_SPARC_UA32:
+    case R_SPARC_PLT32:
+      *(ub32 *)loc = S + A;
+      break;
     case R_SPARC_64:
-    case R_SPARC_UA64:
       apply_abs_dyn_rel(ctx, sym, rel, loc, S, A, P, dynrel);
       break;
-    case R_SPARC_5:
-    case R_SPARC_7:
-    case R_SPARC_6:
-    case R_SPARC_8:
-    case R_SPARC_10:
-    case R_SPARC_11:
-    case R_SPARC_16:
-    case R_SPARC_32:
-    case R_SPARC_UA16:
-    case R_SPARC_UA32:
-    case R_SPARC_22:
-    case R_SPARC_13:
-    case R_SPARC_HI22:
-    case R_SPARC_HH22:
-    case R_SPARC_HM10:
-    case R_SPARC_LM22:
-    case R_SPARC_LO10:
-    case R_SPARC_OLO10:
-    case R_SPARC_HIX22:
-    case R_SPARC_LOX10:
-    case R_SPARC_H44:
-    case R_SPARC_M44:
-    case R_SPARC_L44:
-    case R_SPARC_REGISTER:
-    case R_SPARC_GOT10:
-    case R_SPARC_GOT13:
-    case R_SPARC_GOT22:
-    case R_SPARC_PLT32:
-    case R_SPARC_WPLT30:
-    case R_SPARC_HIPLT22:
-    case R_SPARC_LOPLT10:
-    case R_SPARC_PCPLT32:
-    case R_SPARC_PCPLT22:
-    case R_SPARC_PCPLT10:
-    case R_SPARC_PLT64:
-    case R_SPARC_TLS_GD_HI22:
-    case R_SPARC_TLS_LDM_HI22:
-    case R_SPARC_TLS_IE_HI22:
-    case R_SPARC_TLS_IE_LD:
-    case R_SPARC_TLS_IE_LDX:
-    case R_SPARC_TLS_IE_ADD:
-    case R_SPARC_TLS_LE_HIX22:
     case R_SPARC_DISP8:
+      *(u8 *)loc = S + A - P;
+      break;
     case R_SPARC_DISP16:
+      *(ub16 *)loc = S + A - P;
+      break;
     case R_SPARC_DISP32:
-    case R_SPARC_PC10:
-    case R_SPARC_PC22:
-    case R_SPARC_WDISP30:
+    case R_SPARC_PCPLT32:
+      *(ub32 *)loc = S + A - P;
+      break;
     case R_SPARC_WDISP22:
-    case R_SPARC_PC_HH22:
-    case R_SPARC_PC_HM10:
-    case R_SPARC_PC_LM22:
-    case R_SPARC_WDISP16:
-    case R_SPARC_WDISP19:
-    case R_SPARC_DISP64:
-    case R_SPARC_TLS_GD_LO10:
-    case R_SPARC_TLS_GD_ADD:
-    case R_SPARC_TLS_GD_CALL:
-    case R_SPARC_TLS_LDM_LO10:
-    case R_SPARC_TLS_LDM_ADD:
-    case R_SPARC_TLS_LDM_CALL:
-    case R_SPARC_TLS_IE_LO10:
-    case R_SPARC_TLS_LE_LOX10:
-    case R_SPARC_TLS_LDO_HIX22:
-    case R_SPARC_TLS_LDO_ADD:
-    case R_SPARC_TLS_LDO_LOX10:
-    case R_SPARC_GOTDATA_OP_HIX22:
-    case R_SPARC_GOTDATA_OP_LOX10:
+      *(ub32 *)loc |= bits((S + A - P) >> 2, 21, 0);
+      break;
+    case R_SPARC_WDISP30:
+    case R_SPARC_WPLT30:
+      *(ub32 *)loc |= bits((S + A - P) >> 2, 29, 0);
+      break;
+    case R_SPARC_HI22:
+    case R_SPARC_HIPLT22:
+      *(ub32 *)loc |= bits((S + A) >> 10, 21, 0);
+      break;
+    case R_SPARC_LO10:
+    case R_SPARC_LOPLT10:
+      *(ub32 *)loc |= bits(S + A, 9, 0);
+      break;
+    case R_SPARC_GOT10:
+      *(ub32 *)loc |= bits(G, 9, 0);
+      break;
+    case R_SPARC_GOT13:
+      *(ub32 *)loc |= bits(G, 12, 0);
+      break;
+    case R_SPARC_GOT22:
+      *(ub32 *)loc |= bits(G >> 10, 21, 0);
+      break;
+    case R_SPARC_GOTDATA_HIX22:
+    case R_SPARC_GOTDATA_OP_HIX22: {
+      i64 val = S + A - GOT;
+      *(ub32 *)loc |= bits((val >> 10) ^ (val >> 42), 21, 0);
+      break;
+    }
+    case R_SPARC_GOTDATA_LOX10:
+    case R_SPARC_GOTDATA_OP_LOX10: {
+      i64 val = S + A - GOT;
+      *(ub32 *)loc |= bits((val & 0x3ff) | (0x1c00 ^ ~((val >> 50) & 0x1c00)), 9, 0);
+      break;
+    }
     case R_SPARC_GOTDATA_OP:
+      break;
+    case R_SPARC_PC10:
+    case R_SPARC_PCPLT10:
+      *(ub32 *)loc |= bits(S + A - P, 9, 0);
+      break;
+    case R_SPARC_PC22:
+    case R_SPARC_PCPLT22:
+      *(ub32 *)loc |= bits((S + A - P) >> 10, 21, 0);
+      break;
+    case R_SPARC_OLO10:
+      *(ub32 *)loc |= bits(S + A, 9, 0); // + O
+      break;
+    case R_SPARC_HH22:
+      *(ub32 *)loc |= bits((S + A) >> 42, 21, 0);
+      break;
+    case R_SPARC_HM10:
+      *(ub32 *)loc |= bits((S + A) >> 32, 9, 0);
+      break;
+    case R_SPARC_LM22:
+      *(ub32 *)loc |= bits((S + A) >> 10, 21, 0);
+      break;
+    case R_SPARC_PC_HH22:
+      *(ub32 *)loc |= bits((S + A - P) >> 42, 21, 0);
+      break;
+    case R_SPARC_PC_HM10:
+      *(ub32 *)loc |= bits((S + A - P) >> 32, 9, 0);
+      break;
+    case R_SPARC_PC_LM22:
+      *(ub32 *)loc |= bits((S + A - P) >> 10, 21, 0);
+      break;
+    case R_SPARC_WDISP16: {
+      i64 val = (S + A - P) >> 2;
+      *(ub16 *)loc |= (bit(val, 14) << 21) | bits(val, 13, 0);
+      break;
+    }
+    case R_SPARC_WDISP19:
+      *(ub32 *)loc |= bits((S + A - P) >> 2, 18, 0);
+      break;
+    case R_SPARC_DISP64:
+      *(ub64 *)loc = S + A - P;
+      break;
+    case R_SPARC_PLT64:
+      *(ub32 *)loc = S + A;
+      break;
+    case R_SPARC_HIX22:
+      *(ub32 *)loc |= bits(~(S + A) >> 10, 21, 0);
+      break;
+    case R_SPARC_LOX10:
+      *(ub32 *)loc |= bits(S + A, 9, 0) | 0b0001'1100'0000'0000;
+      break;
+    case R_SPARC_H44:
+      *(ub32 *)loc |= bits((S + A) >> 22, 21, 0);
+      break;
+    case R_SPARC_M44:
+      *(ub32 *)loc |= bits((S + A) >> 12, 9, 0);
+      break;
+    case R_SPARC_L44:
+      *(ub32 *)loc |= bits(S + A, 11, 0);
+      break;
+    case R_SPARC_UA64:
+    case R_SPARC_REGISTER:
+      *(ub64 *)loc = S + A;
       break;
     default:
       Fatal(ctx) << *this << ": apply_reloc_alloc relocation: " << rel;
@@ -255,40 +327,34 @@ void InputSection<E>::scan_relocations(Context<E> &ctx) {
       sym.flags |= (NEEDS_GOT | NEEDS_PLT);
 
     switch (rel.r_type) {
-    case R_SPARC_64:
-    case R_SPARC_UA64:
-      scan_abs_dyn_rel(ctx, sym, rel);
-      break;
-    case R_SPARC_5:
-    case R_SPARC_7:
-    case R_SPARC_6:
     case R_SPARC_8:
     case R_SPARC_10:
     case R_SPARC_11:
+    case R_SPARC_13:
     case R_SPARC_16:
+    case R_SPARC_22:
     case R_SPARC_32:
+    case R_SPARC_64:
+    case R_SPARC_REGISTER:
     case R_SPARC_UA16:
     case R_SPARC_UA32:
-    case R_SPARC_22:
-    case R_SPARC_13:
-    case R_SPARC_HI22:
-    case R_SPARC_HH22:
-    case R_SPARC_HM10:
-    case R_SPARC_LM22:
-    case R_SPARC_LO10:
+    case R_SPARC_UA64:
+    case R_SPARC_PC_HM10:
     case R_SPARC_OLO10:
-    case R_SPARC_HIX22:
     case R_SPARC_LOX10:
-    case R_SPARC_H44:
+    case R_SPARC_HM10:
     case R_SPARC_M44:
+    case R_SPARC_HIX22:
+    case R_SPARC_5:
+    case R_SPARC_6:
+    case R_SPARC_LO10:
+    case R_SPARC_7:
     case R_SPARC_L44:
-    case R_SPARC_REGISTER:
+    case R_SPARC_LM22:
+    case R_SPARC_HI22:
+    case R_SPARC_H44:
+    case R_SPARC_HH22:
       scan_abs_rel(ctx, sym, rel);
-      break;
-    case R_SPARC_GOT10:
-    case R_SPARC_GOT13:
-    case R_SPARC_GOT22:
-      sym.flags |= NEEDS_GOT;
       break;
     case R_SPARC_PLT32:
     case R_SPARC_WPLT30:
@@ -301,46 +367,29 @@ void InputSection<E>::scan_relocations(Context<E> &ctx) {
       if (sym.is_imported)
         sym.flags |= NEEDS_PLT;
       break;
-    case R_SPARC_TLS_GD_HI22:
-      sym.flags |= NEEDS_TLSGD;
-      break;
-    case R_SPARC_TLS_LDM_HI22:
-      ctx.needs_tlsld = true;
-      break;
-    case R_SPARC_TLS_IE_HI22:
-    case R_SPARC_TLS_IE_LD:
-    case R_SPARC_TLS_IE_LDX:
-    case R_SPARC_TLS_IE_ADD:
-    case R_SPARC_TLS_LE_HIX22:
-      sym.flags |= NEEDS_GOTTP;
-      break;
-    case R_SPARC_DISP8:
-    case R_SPARC_DISP16:
-    case R_SPARC_DISP32:
-    case R_SPARC_PC10:
-    case R_SPARC_PC22:
-    case R_SPARC_WDISP30:
-    case R_SPARC_WDISP22:
-    case R_SPARC_PC_HH22:
-    case R_SPARC_PC_HM10:
-    case R_SPARC_PC_LM22:
-    case R_SPARC_WDISP16:
-    case R_SPARC_WDISP19:
-    case R_SPARC_DISP64:
-    case R_SPARC_TLS_GD_LO10:
-    case R_SPARC_TLS_GD_ADD:
-    case R_SPARC_TLS_GD_CALL:
-    case R_SPARC_TLS_LDM_LO10:
-    case R_SPARC_TLS_LDM_ADD:
-    case R_SPARC_TLS_LDM_CALL:
-    case R_SPARC_TLS_IE_LO10:
-    case R_SPARC_TLS_LE_LOX10:
-    case R_SPARC_TLS_LDO_HIX22:
-    case R_SPARC_TLS_LDO_ADD:
-    case R_SPARC_TLS_LDO_LOX10:
+    case R_SPARC_GOT13:
+    case R_SPARC_GOT10:
+    case R_SPARC_GOT22:
+    case R_SPARC_GOTDATA_HIX22:
+    case R_SPARC_GOTDATA_LOX10:
     case R_SPARC_GOTDATA_OP_HIX22:
     case R_SPARC_GOTDATA_OP_LOX10:
     case R_SPARC_GOTDATA_OP:
+      sym.flags |= NEEDS_GOT;
+      break;
+    case R_SPARC_DISP16:
+    case R_SPARC_DISP32:
+    case R_SPARC_DISP64:
+    case R_SPARC_DISP8:
+    case R_SPARC_PC10:
+    case R_SPARC_PC22:
+    case R_SPARC_PC_LM22:
+    case R_SPARC_WDISP16:
+    case R_SPARC_WDISP19:
+    case R_SPARC_WDISP22:
+    case R_SPARC_WDISP30:
+    case R_SPARC_PC_HH22:
+      scan_pcrel_rel(ctx, sym, rel);
       break;
     default:
       Fatal(ctx) << *this << ": scan_relocations: " << rel;

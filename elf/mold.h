@@ -827,7 +827,7 @@ public:
   void update_shdr(Context<E> &ctx) override;
   void copy_buf(Context<E> &ctx) override;
 
-  std::vector<u16> contents;
+  std::vector<U16<E>> contents;
 };
 
 template <typename E>
@@ -982,7 +982,9 @@ public:
   void copy_buf(Context<E> &ctx) override;
 
 private:
-  using RelaTy = typename std::conditional_t<E::is_64, EL64Rela, EL32Rela>;
+  using RelaTy = std::conditional_t<E::is_le,
+    std::conditional_t<E::is_64, EL64Rela, EL32Rela>,
+    std::conditional_t<E::is_64, EB64Rela, EB32Rela>>;
 
   OutputSection<E> &output_section;
   std::vector<i64> offsets;
